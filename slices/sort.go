@@ -47,20 +47,22 @@ func main() {
 	if len(os.Args) > 1 {
 		result, err := strconv.ParseUint(os.Args[1], 10, 32)
 		if err != nil {
-			fmt.Println("error converting %v to uint32\n", os.Args[1])
-			return
+			fmt.Printf("error converting %v to uint32, using default value of %v \n",
+			os.Args[1], size)
+		} else {
+			size = int(result)
 		}
-		size = int(result)
 	}
 	if len(os.Args) > 2 {
 		result, err := strconv.ParseUint(os.Args[2], 10, 32)
 		if err != nil {
-			fmt.Println("error converting %v to uint32\n", os.Args[2])
-			return
+			fmt.Printf("error converting %v to uint32, using default value of %v \n",
+			os.Args[2], nWorkers)
+		} else {
+			nWorkers = int(result)
 		}
-		nWorkers = int(result)
 	}
-	fmt.Println("size = %v, nWorkers = %v\n", size, nWorkers)
+	fmt.Printf("size = %v, nWorkers = %v\n", size, nWorkers)
 
 	s := make([]uint32, size)
 	start := time.Now()
