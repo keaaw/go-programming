@@ -9,13 +9,8 @@ import (
 	"strconv"
 )
 
-var (
-	size = 10000000
-	nWorkers = 4
-)
-
-func divideWorkAndWait(s []uint32, doWork func([]uint32, chan<- int)) {
-	workerSize := size / nWorkers
+func divideWorkAndWait(s []uint32, doWork func([]uint32, chan<- int), nWorkers int) {
+	workerSize := len(s) / nWorkers
 	c := make(chan int)
 	for w := 0; w < nWorkers; w, s = w+1, s[workerSize:] {
 		// account for rounding by making sure the last worker covers the very end of the slice
@@ -44,6 +39,8 @@ func sort(s []uint32, c chan<- int) {
 }
 
 func main() {
+	size := 10000000
+	nWorkers := 4
 	if len(os.Args) > 1 {
 		result, err := strconv.ParseUint(os.Args[1], 10, 32)
 		if err != nil {
@@ -66,9 +63,14 @@ func main() {
 
 	s := make([]uint32, size)
 	start := time.Now()
-	divideWorkAndWait(s, fillRandom)
-	divideWorkAndWait(s, sort)
+	divideWorkAndWait(s, fillRandom, 8)
+	for ; nWorkers >= 1; nWorkers /= 2 {
+		divideWorkAndWait(s, sort, nWorkers)
+	}
 	end := time.Now()
 	duration := end.Sub(start)
+	//if !slices.IsSorted(s) {
+	//	fmt.Println("error!  slice not sorted!")
+	//}
 	fmt.Println(s[:10], "\n", duration)
 }
