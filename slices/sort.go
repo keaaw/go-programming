@@ -3,22 +3,24 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"time"
+	"os"
 	"slices"
+	"time"
+	"strconv"
 )
 
 var (
-	size     = 10000000
+	size = 10000000
 	nWorkers = 4
 )
 
 func divideWorkAndWait(s []uint32, doWork func([]uint32, chan<- int)) {
 	workerSize := size / nWorkers
 	c := make(chan int)
-	for w := 0; w < nWorkers; w, s = w + 1, s[workerSize:] {
+	for w := 0; w < nWorkers; w, s = w+1, s[workerSize:] {
 		// account for rounding by making sure the last worker covers the very end of the slice
 		top := workerSize
-		if w == nWorkers - 1 {
+		if w == nWorkers-1 {
 			top = len(s)
 		}
 		go doWork(s[:top], c)
@@ -42,6 +44,24 @@ func sort(s []uint32, c chan<- int) {
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		result, err := strconv.ParseUint(os.Args[1], 10, 32)
+		if err != nil {
+			fmt.Println("error converting %v to uint32\n", os.Args[1])
+			return
+		}
+		size = int(result)
+	}
+	if len(os.Args) > 2 {
+		result, err := strconv.ParseUint(os.Args[2], 10, 32)
+		if err != nil {
+			fmt.Println("error converting %v to uint32\n", os.Args[2])
+			return
+		}
+		nWorkers = int(result)
+	}
+	fmt.Println("size = %v, nWorkers = %v\n", size, nWorkers)
+
 	s := make([]uint32, size)
 	start := time.Now()
 	divideWorkAndWait(s, fillRandom)
