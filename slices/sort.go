@@ -5,8 +5,8 @@ import (
 	"math/rand"
 	"os"
 	"slices"
-	"time"
 	"strconv"
+	"time"
 )
 
 func divideWorkAndWait(s []uint32, doWork func([]uint32, chan<- int), nWorkers int) {
@@ -45,7 +45,7 @@ func main() {
 		result, err := strconv.ParseUint(os.Args[1], 10, 32)
 		if err != nil {
 			fmt.Printf("error converting %v to uint32, using default value of %v \n",
-			os.Args[1], size)
+				os.Args[1], size)
 		} else {
 			size = int(result)
 		}
@@ -54,7 +54,7 @@ func main() {
 		result, err := strconv.ParseUint(os.Args[2], 10, 32)
 		if err != nil {
 			fmt.Printf("error converting %v to uint32, using default value of %v \n",
-			os.Args[2], nWorkers)
+				os.Args[2], nWorkers)
 		} else {
 			nWorkers = int(result)
 		}
